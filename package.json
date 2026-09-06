@@ -1,0 +1,18 @@
+{
+  "name": "isbn-barcode-checksums",
+  "version": "0.1.0",
+  "description": "Validating parser and pretty printer for ISBN and barcode check digits",
+  "license": "MIT",
+  "author": "mwalker97",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
