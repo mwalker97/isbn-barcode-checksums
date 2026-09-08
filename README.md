@@ -40,6 +40,9 @@ isValid('036000291452'); // true — a UPC-A
 isValid('not a barcode'); // false
 
 format('9780134685991'); // '978-013468599-1'
+
+isbn10ToIsbn13('0-13-468599-7'); // '9780134685991'
+isbn13ToIsbn10('978-0-13-468599-1'); // '0134685997'
 ```
 
 `parse` never throws. A string with a bad length or stray characters comes
@@ -61,6 +64,14 @@ someone mistyped a digit."
 Hyphens and spaces in input are ignored, so `978-0-13-468599-1` and
 `9780134685991` parse identically.
 
+## ISBN-10 / ISBN-13 conversion
+
+`isbn10ToIsbn13` and `isbn13ToIsbn10` convert between the two ISBN checksums.
+Both require the input to already be structurally valid with a correct check
+digit — they convert, they don't repair. `isbn13ToIsbn10` only works on
+978-prefixed codes; the 979 range postdates ISBN-10, so those codes have no
+ISBN-10 form and the function throws for them.
+
 ## Building
 
 There are no runtime dependencies. To compile with `tsc` (any recent
@@ -74,5 +85,5 @@ Output goes to `dist/`.
 
 ## Status
 
-Early. See the checksum math and parsing above for what's solid; ISBN-10/13
-conversion, a CLI, and a test suite aren't written yet.
+Early. See the checksum math, parsing, and ISBN-10/13 conversion above for
+what's solid; a CLI and a test suite aren't written yet.

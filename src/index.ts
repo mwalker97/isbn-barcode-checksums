@@ -131,3 +131,40 @@ export function format(input: string): string {
   if (!result.ok) throw new Error(result.reason);
   return prettyPrint(result);
 }
+
+/**
+ * Converts an ISBN-10 to its ISBN-13 form by prepending the GS1 "978" Bookland
+ * prefix and recomputing the check digit with the mod-10 algorithm instead of
+ * mod-11 — the two formats never share a check digit for the same 9-digit body.
+ * Throws if `input` isn't a structurally valid ISBN-10 with a correct check digit.
+ */
+export function isbn10ToIsbn13(input: string): string {
+  const result = parse(input);
+  if (!result.ok) throw new Error(result.reason);
+  if (result.format !== 'isbn10') throw new Error(`expected an ISBN-10, got ${result.format}`);
+  if (!result.valid) throw new Error('cannot convert an ISBN-10 with an incorrect check digit');
+
+  const body = result.normalized.slice(0, 9).split('').map(Number);
+  const check = gs1CheckDigit([9, 7, 8, ...body]);
+  return `978${body.join('')}${checkDigitToChar(check)}`;
+}
+
+/**
+ * Converts an ISBN-13 back to ISBN-10. Only 978-prefixed ISBN-13s have an
+ * ISBN-10 equivalent — the 979 range was introduced after ISBN-10 was retired,
+ * so those codes never had one. Throws if `input` isn't a valid, convertible
+ * ISBN-13.
+ */
+export function isbn13ToIsbn10(input: string): string {
+  const result = parse(input);
+  if (!result.ok) throw new Error(result.reason);
+  if (result.format !== 'isbn13') throw new Error(`expected an ISBN-13, got ${result.format}`);
+  if (!result.valid) throw new Error('cannot convert an ISBN-13 with an incorrect check digit');
+  if (!result.normalized.startsWith('978')) {
+    throw new Error('only 978-prefixed ISBN-13s have an ISBN-10 equivalent');
+  }
+
+  const body = result.normalized.slice(3, 12).split('').map(Number);
+  const check = isbn10CheckDigit(body);
+  return `${body.join('')}${checkDigitToChar(check)}`;
+}
