@@ -72,6 +72,25 @@ digit — they convert, they don't repair. `isbn13ToIsbn10` only works on
 978-prefixed codes; the 979 range postdates ISBN-10, so those codes have no
 ISBN-10 form and the function throws for them.
 
+## CLI
+
+The package also installs an `isbn-check` binary:
+
+```
+isbn-check 978-0-13-468599-1
+# isbn13 valid 978-013468599-1
+
+isbn-check 0-13-468599-2
+# (stderr) isbn10 invalid: check digit is 2, expected 7
+
+isbn-check 0-13-468599-7 --to-isbn13
+# 9780134685997
+```
+
+It exits 0 for a recognized, correctly-checksummed code and 1 otherwise
+(bad length, bad characters, or a wrong check digit), so it's usable in
+scripts as a plain validity check.
+
 ## Building
 
 There are no runtime dependencies. To compile with `tsc` (any recent
@@ -85,5 +104,5 @@ Output goes to `dist/`.
 
 ## Status
 
-Early. See the checksum math, parsing, and ISBN-10/13 conversion above for
-what's solid; a CLI and a test suite aren't written yet.
+Early. See the checksum math, parsing, ISBN-10/13 conversion, and CLI above
+for what's solid; a test suite isn't written yet.
